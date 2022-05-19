@@ -1,47 +1,173 @@
-/* eslint no-use-before-define: 0 */
-
 import { defineComponent, ref, Ref, reactive, watchEffect } from "vue";
 import { createUseStyles } from "vue-jss";
-
 import MonacoEditor from "./components/MonacoEditor";
+import templates from "./templates";
+import SchemaForm from "../lib";
 
-const useStyles = createUseStyles({
-  editor: {
-    minHeight: 400,
-    width: 400,
-  },
-});
-
-const schema = {
-  type: "string",
-};
+type Schema = any;
+type UISchema = any;
 
 function toJson(data: any) {
   return JSON.stringify(data, null, 2);
 }
 
+const useStyles = createUseStyles({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    width: "1200px",
+    margin: "0 auto",
+  },
+  menu: {
+    marginBottom: 20,
+  },
+  code: {
+    width: 700,
+    flexShrink: 0,
+  },
+  codePanel: {
+    minHeight: 400,
+    marginBottom: 20,
+  },
+  uiAndValue: {
+    display: "flex",
+    justifyContent: "space-between",
+    "& > *": {
+      width: "46%",
+    },
+  },
+  content: {
+    display: "flex",
+  },
+  form: {
+    padding: "0 20px",
+    flexGrow: 1,
+  },
+  menuButton: {
+    appearance: "none",
+    borderWidth: 0,
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    display: "inline-block",
+    padding: 15,
+    borderRadius: 5,
+    "&:hover": {
+      background: "#efefef",
+    },
+  },
+  menuSelected: {
+    background: "#337ab7",
+    color: "#fff",
+    "&:hover": {
+      background: "#337ab7",
+    },
+  },
+});
+
 export default defineComponent({
   setup() {
-    const schemaRef: Ref<any> = ref(schema);
+    const selectedRef: Ref<number> = ref(0);
 
-    const handleOnChange = (code: string) => {
-      let schema: any;
-      try {
-        schema = JSON.parse(code);
-      } catch (err) {}
+    const template: {
+      schema: Schema | null;
+      data: any;
+      uiSchema: UISchema | null;
+      schemaCode: string;
+      dataCode: string;
+      uiSchemaCode: string;
+    } = reactive({
+      schema: null,
+      data: {},
+      uiSchema: {},
+      schemaCode: "",
+      dataCode: "",
+      uiSchemaCode: "",
+    });
 
-      schemaRef.value = schema;
-    };
+    watchEffect(() => {
+      const index = selectedRef.value;
+      const d = templates[index];
+      template.schema = d.schema;
+      template.data = d.default;
+      template.uiSchema = d.uiSchema;
+      template.schemaCode = toJson(d.schema);
+      template.dataCode = toJson(d.default);
+      template.uiSchemaCode = toJson(d.uiSchema);
+    });
+
+    const methodRef: Ref<any> = ref();
 
     const classesRef = useStyles();
 
+    const handleChange = (v: any) => {
+      template.data = v;
+      template.dataCode = toJson(v);
+    };
+
+    function handleCodeChange(filed: "schema" | "data" | "uiSchema", value: string) {
+      try {
+        const json = JSON.parse(value);
+        template[filed] = json;
+        (template as any)[`${filed}Code`] = value;
+      } catch (err) {}
+    }
+
+    const handleSchemaChange = (v: string) => handleCodeChange("schema", v);
+    const handleDataChange = (v: string) => handleCodeChange("data", v);
+    const handleUISchemaChange = (v: string) => handleCodeChange("uiSchema", v);
+
     return () => {
       const classes = classesRef.value;
-      const code = toJson(schemaRef.value);
+      const selected = selectedRef.value;
+
+      console.log(methodRef);
 
       return (
-        <div>
-          <MonacoEditor class={classes.editor} code={code} onChange={handleOnChange} title="Editor" />
+        <div class={classes.container}>
+          <div class={classes.menu}>
+            <h1>JsonSchema Form</h1>
+            <div>
+              {templates.map((template, index) => (
+                <button
+                  class={{
+                    [classes.menuButton]: true,
+                    [classes.menuSelected]: index === selected,
+                  }}
+                  onClick={() => (selectedRef.value = index)}
+                >
+                  {template.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div class={classes.content}>
+            <div class={classes.code}>
+              <MonacoEditor
+                code={template.schemaCode}
+                class={classes.codePanel}
+                onChange={handleSchemaChange}
+                title="Schema"
+              />
+              <div class={classes.uiAndValue}>
+                <MonacoEditor
+                  code={template.uiSchemaCode}
+                  class={classes.codePanel}
+                  onChange={handleUISchemaChange}
+                  title="UISchema"
+                />
+                <MonacoEditor
+                  code={template.dataCode}
+                  class={classes.codePanel}
+                  onChange={handleDataChange}
+                  title="Value"
+                />
+              </div>
+            </div>
+            <div class={classes.form}>
+              <SchemaForm schema={template.schema} value={template.data} onChange={handleChange} />
+            </div>
+          </div>
         </div>
       );
     };
