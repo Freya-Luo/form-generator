@@ -2,7 +2,7 @@ export default {
   name: "Singlet",
   schema: {
     description: "A simple form example.",
-    type: "string",
+    type: "number",
     required: ["firstName", "lastName"],
     properties: {
       firstName: {
