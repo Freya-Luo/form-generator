@@ -2,7 +2,7 @@ import { defineComponent } from "vue";
 
 import { SchemaTypes, FieldProps } from "./types";
 import StringField from "./fields/StringField.vue";
-import NumberField from "./fields/NumberField";
+import NumberField from "./fields/NumberField.vue";
 
 // Intermediate item - passes the props down to the specific component
 export default defineComponent({
