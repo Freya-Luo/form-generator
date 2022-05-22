@@ -9,9 +9,17 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@types/json-schema-merge-allof": "^0.6.1",
+    "@types/lodash.union": "^4.6.7",
+    "ajv": "6.12.4",
+    "ajv-errors": "^1.0.1",
+    "ajv-i18n": "^3.5.0",
     "core-js": "^3.8.3",
+    "json-schema-merge-allof": "^0.7.0",
+    "jsonpointer": "^4.1.0",
     "jss": "^10.9.0",
     "jss-preset-default": "^10.9.0",
+    "lodash.union": "^4.6.0",
     "vue": "^3.2.13",
     "vue-jss": "^0.0.4"
   },

@@ -12,7 +12,8 @@ export enum SchemaTypes {
 type SchemaRef = { $ref: string };
 
 export interface Schema {
-  type: SchemaTypes | string;
+  type?: SchemaTypes | string;
+  title?: string;
   const?: any;
   format?: string;
   default?: any;
@@ -24,6 +25,8 @@ export interface Schema {
     [key: string]: string[] | Schema | SchemaRef;
   };
   oneOf?: Schema[];
+  anyOf?: Schema[];
+  allOf?: Schema[];
   required?: string[];
   enum?: any[];
   enumKeyValue?: any[];
@@ -33,6 +36,10 @@ export interface Schema {
 
 export const FieldProps = {
   schema: {
+    type: Object as PropType<Schema>,
+    required: true,
+  },
+  rootSchema: {
     type: Object as PropType<Schema>,
     required: true,
   },
