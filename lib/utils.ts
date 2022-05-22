@@ -43,9 +43,32 @@ export function resolveSchema(schema: Schema, rootSchema = {}, formData = {}) {
   }
 }
 
-export function retrieveSchema(schema: Schema, rootSchema = {}, formData: any = {}): Schema {
-  // TODO: retrieve schema based on the subschemas if necessary and other additional properties
-  return schema;
+// Retrieve schema based on the subschemas if necessary and other additional properties
+export function retrieveSchema(schema: any, rootSchema = {}, formData: any = {}): Schema {
+  if (!isObject(schema)) {
+    return {} as Schema;
+  }
+  let resolvedSchema = resolveSchema(schema, rootSchema, formData);
+
+  if ("allOf" in schema) {
+    try {
+      resolvedSchema = mergeAllOf({
+        ...resolvedSchema,
+        allOf: resolvedSchema.allOf,
+      } as any) as Schema;
+    } catch (e) {
+      console.warn("Cannot merge subschemas in allOf:\n" + e);
+      const { allOf, ...resolvedSchemaWithoutAllOf } = resolvedSchema;
+      return resolvedSchemaWithoutAllOf;
+    }
+  }
+  const hasAdditionalProperties =
+    resolvedSchema.hasOwnProperty("additionalProperties") && resolvedSchema.additionalProperties !== false;
+  if (hasAdditionalProperties) {
+    // stub existing additional properties into schema
+    return stubExistingAdditionalProperties(resolvedSchema, rootSchema, formData);
+  }
+  return resolvedSchema;
 }
 
 function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Schema {
@@ -55,5 +78,9 @@ function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Sc
 
 function resolveReference(schema: Schema, rootSchema: any, formData: any): Schema {
   // TODO: resolve referred schema against the schema's base URI
+  return schema;
+}
+
+export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Schema = {}, formData: any = {}) {
   return schema;
 }
