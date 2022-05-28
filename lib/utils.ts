@@ -92,7 +92,7 @@ export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Sch
     } else if (schema.additionalProperties.hasOwnProperty("type")) {
       additionalProperties = { ...schema.additionalProperties };
     } else {
-      additionalProperties = { type: formData[key] };
+      additionalProperties = { type: guessType(formData[key]) };
     }
 
     (schema as any).properties[key] = additionalProperties;
@@ -112,3 +112,22 @@ function resolveReference(schema: Schema, rootSchema: any, formData: any): Schem
   // TODO: resolve referred schema against the schema's base URI
   return schema;
 }
+
+// Implicitly create a schema. It is useful to know what type to use
+// based on the data we are defining
+export const guessType = function guessType(value: any) {
+  if (Array.isArray(value)) {
+    return "array";
+  } else if (typeof value === "string") {
+    return "string";
+  } else if (value == null) {
+    return "null";
+  } else if (typeof value === "boolean") {
+    return "boolean";
+  } else if (!isNaN(value)) {
+    return "number";
+  } else if (typeof value === "object") {
+    return "object";
+  }
+  return "string";
+};
