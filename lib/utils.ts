@@ -8,6 +8,8 @@ export function isObject(thing: any) {
   return typeof thing === "object" && thing !== null && !Array.isArray(thing);
 }
 
+export const ADDITIONAL_PROPERTY_FLAG = "__additional_property";
+
 export function hasOwnProperty(obj: any, key: string) {
   // directly using obj.hasOwnProperty not correct, obj may have already overwritten
   // hasOwnProperty() method
@@ -71,6 +73,36 @@ export function retrieveSchema(schema: any, rootSchema = {}, formData: any = {})
   return resolvedSchema;
 }
 
+// Create a new entry for each key in the formData in schema "properties" field
+export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Schema = {}, formData: any = {}) {
+  schema = {
+    ...schema,
+    properties: { ...schema.properties },
+  };
+
+  Object.keys(formData).forEach((key) => {
+    if ((schema as any).properties.hasOwnProperty(key)) {
+      // no need to stub, schema already has the property
+      return;
+    }
+
+    let additionalProperties;
+    if (schema.additionalProperties.hasOwnProperty("$ref")) {
+      additionalProperties = retrieveSchema({ $ref: schema.additionalProperties["$ref"] }, rootSchema, formData);
+    } else if (schema.additionalProperties.hasOwnProperty("type")) {
+      additionalProperties = { ...schema.additionalProperties };
+    } else {
+      additionalProperties = { type: formData[key] };
+    }
+
+    (schema as any).properties[key] = additionalProperties;
+    // set additional property flag
+    (schema as any).properties[key][ADDITIONAL_PROPERTY_FLAG] = true;
+  });
+
+  return schema;
+}
+
 function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Schema {
   // TODO: resolve dependencies based on the existing properties
   return schema;
@@ -78,9 +110,5 @@ function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Sc
 
 function resolveReference(schema: Schema, rootSchema: any, formData: any): Schema {
   // TODO: resolve referred schema against the schema's base URI
-  return schema;
-}
-
-export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Schema = {}, formData: any = {}) {
   return schema;
 }
