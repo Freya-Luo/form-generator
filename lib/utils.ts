@@ -3,6 +3,7 @@ import { Schema } from "./types";
 import jsonpointer from "jsonpointer";
 import union from "lodash.union";
 import mergeAllOf from "json-schema-merge-allof";
+import SchemaForm from "./SchemaForm";
 
 export function isObject(thing: any) {
   return typeof thing === "object" && thing !== null && !Array.isArray(thing);
@@ -103,9 +104,20 @@ export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Sch
   return schema;
 }
 
-// TODO: Resolve dependencies based on the existing properties
-export function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Schema {
-  return schema;
+export function getMatchingOption(formData: any, options: Schema[], isValid: (schema: Schema, data: any) => boolean) {
+  return 0;
+}
+
+// Resolve dependencies based on the existing properties
+export function resolveDependencies(schema: any, rootSchema: any, formData: any): Schema {
+  // peel off "dependencies" property from the source schema
+  let { dependencies = {}, ...resolvedSchema } = schema; // eslint-disable-line
+  if ("oneOf" in resolvedSchema) {
+    resolvedSchema = resolvedSchema.oneOf[getMatchingOption(formData, resolvedSchema.oneOf, rootSchema)];
+  } else if ("anyOf" in resolvedSchema) {
+    resolvedSchema = resolvedSchema.anyOf[getMatchingOption(formData, resolvedSchema.anyOf, rootSchema)];
+  }
+  return processDependencies(dependencies, resolvedSchema, rootSchema, formData);
 }
 
 // Resolve referred schema against the schema's base URI
@@ -154,3 +166,107 @@ export const guessType = function guessType(value: any) {
   }
   return "string";
 };
+
+/* --------------------------------- Helpers for resolving dependencies ------------------------------------- */
+
+// Get the type of a given schema
+export function getSchemaType(schema: Schema): string | undefined {
+  const { type } = schema;
+
+  if (!type && schema.const) {
+    return guessType(schema.const);
+  }
+
+  if (!type && schema.enum) {
+    return "string";
+  }
+
+  if (!type && (schema.properties || schema.additionalProperties)) {
+    return "object";
+  }
+
+  const t: any = type;
+  if (t instanceof Array && t.length === 2 && t.includes("null")) {
+    return t.find((type) => type !== "null");
+  }
+
+  return type;
+}
+
+// Recursively merge deeply nested schemas.
+// The difference between mergeSchemas and mergeObjects is that mergeSchemas only concatenates arrays
+// for values under "required" keyword.
+export function mergeSchemas(obj1: any, obj2: any) {
+  const acc = Object.assign({}, obj1); // Prevent mutation of source object.
+  return Object.keys(obj2).reduce((acc, key) => {
+    const left = obj1 ? obj1[key] : {},
+      right = obj2[key];
+    if (obj1 && hasOwnProperty(obj1, key) && isObject(right)) {
+      acc[key] = mergeSchemas(left, right);
+    } else if (
+      obj1 &&
+      obj2 &&
+      (getSchemaType(obj1) === "object" || getSchemaType(obj2) === "object") &&
+      key === "required" &&
+      Array.isArray(left) &&
+      Array.isArray(right)
+    ) {
+      // avoid includeing duplicate values when merging "required" fields
+      acc[key] = union(left, right);
+    } else {
+      acc[key] = right;
+    }
+    return acc;
+  }, acc);
+}
+
+function withOneSubschema(schema: any, rootSchema: any, formData: any, dependencyKey: any, oneOf: any) {}
+
+function withDependentProperties(schema: any, additionallyRequired: any) {
+  if (!additionallyRequired) {
+    return schema;
+  }
+  const required = Array.isArray(schema.required)
+    ? Array.from(new Set([...schema.required, ...additionallyRequired]))
+    : additionallyRequired;
+  return { ...schema, required: required };
+}
+
+function withDependentSchema(schema: any, rootSchema: any, formData: any, dependencyKey: any, dependencyValue: any) {
+  const { oneOf, ...dependentSchema } = retrieveSchema(dependencyValue, rootSchema, formData);
+  schema = mergeSchemas(schema, dependentSchema);
+
+  if (oneOf === undefined) {
+    return schema;
+  } else if (!Array.isArray(oneOf)) {
+    throw new Error(`invalid: it is some ${typeof oneOf} instead of an array`);
+  }
+  // resolve "$ref"s inside "oneOf"
+  const resolvedOneOf = oneOf.map((subschema) =>
+    hasOwnProperty(subschema, "$ref") ? resolveReference(subschema, rootSchema, formData) : subschema
+  );
+  return withOneSubschema(schema, rootSchema, formData, dependencyKey, resolvedOneOf);
+}
+
+function processDependencies(dependencies: any, resolvedSchema: any, rootSchema: any, formData: any): Schema {
+  // process dependencies
+  for (const dependencyKey in dependencies) {
+    // ignore the dependencies if schema has no trigger properties
+    if (formData[dependencyKey] === undefined) {
+      continue;
+    }
+    // ignore this dependency if it is not included in the schema
+    if (resolvedSchema.properties && !(dependencyKey in resolvedSchema.properties)) {
+      continue;
+    }
+    const { [dependencyKey]: dependencyValue, ...remainingDependencies } = dependencies;
+    // recursively handle dependencies based on its format (array or object)
+    if (Array.isArray(dependencyValue)) {
+      resolvedSchema = withDependentProperties(resolvedSchema, dependencyValue);
+    } else if (isObject(dependencyValue)) {
+      resolvedSchema = withDependentSchema(resolvedSchema, rootSchema, formData, dependencyKey, dependencyValue);
+    }
+    return processDependencies(remainingDependencies, resolvedSchema, rootSchema, formData);
+  }
+  return resolvedSchema;
+}
