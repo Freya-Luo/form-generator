@@ -103,14 +103,37 @@ export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Sch
   return schema;
 }
 
-function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Schema {
-  // TODO: resolve dependencies based on the existing properties
+// TODO: Resolve dependencies based on the existing properties
+export function resolveDependencies(schema: Schema, rootSchema: any, formData: any): Schema {
   return schema;
 }
 
-function resolveReference(schema: Schema, rootSchema: any, formData: any): Schema {
-  // TODO: resolve referred schema against the schema's base URI
-  return schema;
+// Resolve referred schema against the schema's base URI
+export function resolveReference(schema: any, rootSchema: any, formData: any): Schema {
+  // retrieve the referenced schema definition
+  const $refSchema = findSchemaDefinition(schema.$ref, rootSchema);
+  // peel off "$ref" property
+  const { $ref, ...localSchema } = schema;
+  // update referenced schema definition with local schema properties
+  return retrieveSchema({ ...$refSchema, ...localSchema }, rootSchema, formData);
+}
+
+export function findSchemaDefinition($ref: string, rootSchema = {}): Schema {
+  const origRef = $ref;
+  if ($ref.startsWith("#")) {
+    // decode URI fragment representation
+    $ref = decodeURIComponent($ref.substring(1));
+  } else {
+    throw new Error(`Cannot find a definition for ${origRef}.`);
+  }
+  const current = jsonpointer.get(rootSchema, $ref);
+  if (current === undefined) {
+    throw new Error(`Cannot find a definition for ${origRef}.`);
+  }
+  if (hasOwnProperty(current, "$ref")) {
+    return findSchemaDefinition(current.$ref, rootSchema);
+  }
+  return current;
 }
 
 // Implicitly create a schema. It is useful to know what type to use
