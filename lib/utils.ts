@@ -104,7 +104,51 @@ export function stubExistingAdditionalProperties(schema: Schema, rootSchema: Sch
   return schema;
 }
 
+// Add more matching constraints to the schema. Because unless the schema has
+// "required" keyword, an object can match this schema as long as it
+// doesn't have any matching keys with a conflicting type.
+// The augmentation here restricts the behavior in which schema can only match
+// if any keys in the schema are present on the object and pass the validation.
 export function getMatchingOption(formData: any, options: Schema[], isValid: (schema: Schema, data: any) => boolean) {
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i];
+
+    if (option.properties) {
+      // create an "anyOf" schema that requires at least one of the keys in the
+      // "properties" object
+      const requiresAnyOf = {
+        anyOf: Object.keys(option.properties).map((key) => ({
+          required: [key],
+        })),
+      };
+
+      let augmentedSchema;
+      if (option.anyOf) {
+        // create a shallow copy of the option
+        const { ...shallowClone } = option;
+
+        if (!shallowClone.allOf) {
+          shallowClone.allOf = [];
+        } else {
+          // if "allOf" already exists, shallow clone the array
+          shallowClone.allOf = shallowClone.allOf.slice();
+        }
+        shallowClone.allOf.push(requiresAnyOf);
+        augmentedSchema = shallowClone;
+      } else {
+        augmentedSchema = Object.assign({}, option, requiresAnyOf);
+      }
+
+      // remove the "required" field as it's likely that not all fields have
+      // been filled in yet, which means that the schema maybe invalid
+      delete augmentedSchema.required;
+      if (isValid(augmentedSchema, formData)) {
+        return i;
+      }
+    } else if (isValid(options[i], formData)) {
+      return i;
+    }
+  }
   return 0;
 }
 
@@ -220,7 +264,33 @@ export function mergeSchemas(obj1: any, obj2: any) {
   }, acc);
 }
 
-function withOneSubschema(schema: any, rootSchema: any, formData: any, dependencyKey: any, oneOf: any) {}
+function withOneSubschema(schema: any, rootSchema: any, formData: any, dependencyKey: any, oneOf: any) {
+  const validSubschemas = oneOf.filter((subschema: any) => {
+    if (!subschema.properties) {
+      return false;
+    }
+    const { [dependencyKey]: conditionPropertySchema } = subschema.properties;
+    if (conditionPropertySchema) {
+      const conditionSchema = {
+        type: "object",
+        properties: {
+          [dependencyKey]: conditionPropertySchema,
+        },
+      };
+      const { errors } = validateData(conditionSchema, formData);
+      return !errors || errors.length === 0;
+    }
+  });
+  if (validSubschemas.length !== 1) {
+    console.warn("ignoring oneOf in dependencies because there isn't exactly one subschema that is valid");
+    return schema;
+  }
+  // debugger
+  const subschema = validSubschemas[0];
+  const { [dependencyKey]: conditionPropertySchema, ...dependentSubschema } = subschema.properties;
+  const dependentSchema = { ...subschema, properties: dependentSubschema };
+  return mergeSchemas(schema, retrieveSchema(dependentSchema, rootSchema, formData));
+}
 
 function withDependentProperties(schema: any, additionallyRequired: any) {
   if (!additionallyRequired) {
