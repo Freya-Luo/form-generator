@@ -1,6 +1,7 @@
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, provide } from "vue";
 import { Schema } from "./types";
 import SchemaItem from "./SchemaItem";
+import { SchemaFormContextKey } from "./context";
 
 export default defineComponent({
   props: {
@@ -22,6 +23,9 @@ export default defineComponent({
     const handleChange = (v: any) => {
       props.onChange(v);
     };
+    // if needs responsive render, context needs to be wrapped with reactive({SchemaItem})
+    const context = { SchemaItem };
+    provide(SchemaFormContextKey, context);
 
     return () => {
       const { schema, value } = props;
