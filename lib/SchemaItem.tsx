@@ -3,6 +3,7 @@ import { computed, defineComponent } from "vue";
 import { SchemaTypes, FieldProps } from "./types";
 import StringField from "./fields/StringField.vue";
 import NumberField from "./fields/NumberField.vue";
+import ObjectField from "./fields/ObjectField";
 import { retrieveSchema } from "./utils";
 
 // Intermediate item - passes the props down to the specific component
@@ -31,6 +32,10 @@ export default defineComponent({
         }
         case SchemaTypes.NUMBER: {
           Component = NumberField;
+          break;
+        }
+        case SchemaTypes.OBJECT: {
+          Component = ObjectField;
           break;
         }
         default: {

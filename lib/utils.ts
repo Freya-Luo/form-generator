@@ -3,7 +3,6 @@ import { Schema } from "./types";
 import jsonpointer from "jsonpointer";
 import union from "lodash.union";
 import mergeAllOf from "json-schema-merge-allof";
-import SchemaForm from "./SchemaForm";
 
 export function isObject(thing: any) {
   return typeof thing === "object" && thing !== null && !Array.isArray(thing);
