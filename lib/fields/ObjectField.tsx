@@ -1,6 +1,6 @@
-import { defineComponent, inject, DefineComponent, ExtractPropTypes, ComponentPublicInstance } from "vue";
+import { defineComponent } from "vue";
 import { FieldProps } from "../types";
-import { SchemaFormContextKey } from "../context";
+import { useSFContext } from "../context";
 import { isObject } from "../utils";
 
 const schema = {
@@ -15,22 +15,13 @@ const schema = {
   },
 };
 
-const SchemaItemComponent = defineComponent({
-  props: FieldProps,
-});
-
-type SchemaItemType = typeof SchemaItemComponent;
-
 export default defineComponent({
   name: "ObjectField",
   props: FieldProps,
   setup(props) {
     // use provide & inject => avoid circular reference dependencies
     // get the context provided by the ancestor node
-    const context: { SchemaItem: SchemaItemType } | undefined = inject(SchemaFormContextKey);
-    if (!context) {
-      throw Error("SchemaItem should be extracted.");
-    }
+    const context = useSFContext();
 
     const handleObjectFieldChange = (key: string, newVal: any) => {
       const value: any = isObject(props.value) ? props.value : {};
@@ -45,7 +36,7 @@ export default defineComponent({
 
     return () => {
       const { schema, rootSchema, value } = props;
-      const { SchemaItem } = context;
+      const SchemaItem = context.SchemaItem;
 
       const properties = schema.properties || {};
       const currentValue: any = isObject(value) ? value : {};

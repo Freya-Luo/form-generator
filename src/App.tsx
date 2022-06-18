@@ -68,6 +68,7 @@ const useStyles = createUseStyles({
 export default defineComponent({
   setup() {
     const selectedRef: Ref<number> = ref(0);
+    const classesRef = useStyles();
 
     const template: {
       schema: Schema | null;
@@ -96,32 +97,26 @@ export default defineComponent({
       template.uiSchemaCode = toJson(d.uiSchema);
     });
 
-    const methodRef: Ref<any> = ref();
-
-    const classesRef = useStyles();
-
-    const handleChange = (v: any) => {
-      template.data = v;
-      template.dataCode = toJson(v);
+    const handleChange = (val: any) => {
+      template.data = val;
+      template.dataCode = toJson(val);
     };
 
-    function handleCodeChange(filed: "schema" | "data" | "uiSchema", value: string) {
+    function handleCodeChange(field: "schema" | "data" | "uiSchema", value: string) {
       try {
         const json = JSON.parse(value);
-        template[filed] = json;
-        (template as any)[`${filed}Code`] = value;
+        template[field] = json;
+        (template as any)[`${field}Code`] = value;
       } catch (err) {}
     }
 
-    const handleSchemaChange = (v: string) => handleCodeChange("schema", v);
-    const handleDataChange = (v: string) => handleCodeChange("data", v);
-    const handleUISchemaChange = (v: string) => handleCodeChange("uiSchema", v);
+    const handleSchemaChange = (val: string) => handleCodeChange("schema", val);
+    const handleDataChange = (val: string) => handleCodeChange("data", val);
+    const handleUISchemaChange = (val: string) => handleCodeChange("uiSchema", val);
 
     return () => {
       const classes = classesRef.value;
       const selected = selectedRef.value;
-
-      console.log(methodRef);
 
       return (
         <div class={classes.container}>

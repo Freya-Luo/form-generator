@@ -1,4 +1,4 @@
-import { PropType } from "vue";
+import { PropType, defineComponent } from "vue";
 
 export enum SchemaTypes {
   "NUMBER" = "number",
@@ -51,3 +51,9 @@ export const FieldProps = {
     required: true,
   },
 } as const; // declare the props as read-only type
+
+export const SchemaItemComponent = defineComponent({
+  props: FieldProps,
+});
+
+export type SchemaFieldType = typeof SchemaItemComponent;

@@ -16,6 +16,10 @@ export default {
         type: "string",
         minLength: 10,
       },
+      arrays: {
+        type: "array",
+        items: [{ type: "string" }, { type: "number" }],
+      },
     },
   },
   uiSchema: {
