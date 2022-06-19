@@ -2,6 +2,7 @@ import { defineComponent } from "vue";
 import { FieldProps, Schema } from "../types";
 import { useSFContext } from "../context";
 import ArrayItem from "./ArrayItem";
+import SelectionField from "./SelectionField";
 
 /**
  * 1) Single Type Array
@@ -16,7 +17,7 @@ import ArrayItem from "./ArrayItem";
  *    { type: number }
  *   ]
  * }
- * 3) Fixed option Array
+ * 3) Fixed options Array
  * {
  *   items: { type: string, enum: ['1', '2'] },
  * }
@@ -98,6 +99,13 @@ export default defineComponent({
           />
         ));
       } else if (isFixedOptionArray) {
+        // fixed options array
+        const enums = (schema as any).items.enum;
+        const options = enums.map((each: any) => ({
+          key: each,
+          value: each,
+        }));
+        return <SelectionField onChange={props.onChange} value={props.value} options={options} />;
       } else {
         // single type array
         const arr = Array.isArray(value) ? value : [];
@@ -122,8 +130,6 @@ export default defineComponent({
           );
         });
       }
-
-      return <div>hh</div>;
     };
   },
 });

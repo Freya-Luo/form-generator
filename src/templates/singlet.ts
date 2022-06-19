@@ -30,6 +30,13 @@ export default {
           },
         },
       },
+      optionArrays: {
+        type: "array",
+        items: {
+          type: "string",
+          enum: ["hhh", "kkk", "ooo"],
+        },
+      },
     },
   },
   uiSchema: {
