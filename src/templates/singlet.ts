@@ -18,7 +18,7 @@ export default {
       },
       arrays: {
         type: "array",
-        items: [{ type: "string" }, { type: "number" }],
+        items: { type: "string" },
       },
     },
   },
@@ -42,5 +42,6 @@ export default {
     age: 75,
     bio: "Roundhouse kicking asses since 1940",
     password: "noneed",
+    arrays: ["freya"],
   },
 };
