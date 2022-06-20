@@ -52,6 +52,9 @@ export default defineComponent({
     };
 
     const handleMoveUp = (index: number) => {
+      if (index === 0) {
+        return;
+      }
       const { value } = props;
       const arr = Array.isArray(value) ? value : [];
       // extract the current item and put it one step up
@@ -63,6 +66,10 @@ export default defineComponent({
     const handleMoveDown = (index: number) => {
       const { value } = props;
       const arr = Array.isArray(value) ? value : [];
+
+      if (index === arr.length - 1) {
+        return;
+      }
       // extract the current item and put it one step down
       const item = arr.splice(index, 1);
       arr.splice(index + 1, 0, item[0]);
