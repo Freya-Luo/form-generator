@@ -1,12 +1,37 @@
-import { shallowMount } from "@vue/test-utils";
-import HelloWorld from "@/components/HelloWorld.vue";
+import { mount, shallowMount } from "@vue/test-utils";
+import { defineComponent, h } from "vue";
 
-describe("HelloWorld.vue", () => {
-  it("renders props.msg when passed", () => {
-    const msg = "new message";
-    const wrapper = shallowMount(HelloWorld, {
-      props: { msg },
+import JsonSchemaForm, { NumberField } from "../../lib";
+
+// Props passing down to the real component is actually an async operation
+describe("JsonSchemaFrom", () => {
+  it("should render correct number field", async () => {
+    let value = "";
+    const wrapper = mount(JsonSchemaForm, {
+      props: {
+        schema: {
+          type: "number",
+        },
+        value: value,
+        onChange: (v: any) => {
+          value = v;
+        },
+      },
     });
-    expect(wrapper.text()).toMatch(msg);
+
+    const numberField = wrapper.findComponent(NumberField);
+    expect(numberField.exists()).toBeTruthy();
+    // not use "await numberField.props('onChange')('123')"
+    // consider the inner implementation which is an <input> element
+    // use this element to trigger the input event
+    const input = numberField.find("input");
+    input.element.value = "123";
+    input.trigger("input");
+    expect(value).toBe(123);
   });
 });
+
+/**
+ * shallowMount: children components' render function won't be executed, though the Virtual object
+ * of children components are built. (that is why it has a slight better performance)
+ */
