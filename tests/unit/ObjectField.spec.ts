@@ -1,8 +1,7 @@
 import { mount } from "@vue/test-utils";
-
 import JsonSchemaForm, { NumberField, StringField } from "../../lib";
 
-describe("ObjectFiled", () => {
+describe("ObjectField Unit Test", () => {
   let schema: any;
   beforeEach(() => {
     schema = {
