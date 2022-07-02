@@ -3,6 +3,7 @@ import { createUseStyles } from "vue-jss";
 import MonacoEditor from "./components/MonacoEditor";
 import templates from "./templates";
 import SchemaForm from "../lib";
+import theme from "../lib/theme";
 
 type Schema = any;
 type UISchema = any;
@@ -160,7 +161,7 @@ export default defineComponent({
               </div>
             </div>
             <div class={classes.form}>
-              <SchemaForm schema={template.schema} value={template.data} onChange={handleChange} />
+              <SchemaForm schema={template.schema} value={template.data} onChange={handleChange} theme={theme as any} />
             </div>
           </div>
         </div>

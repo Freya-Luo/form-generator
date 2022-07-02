@@ -1,13 +1,13 @@
 import { mount, shallowMount } from "@vue/test-utils";
 import { defineComponent, h } from "vue";
 
-import JsonSchemaForm, { NumberField } from "../../lib";
+import SchemaFrom, { NumberField } from "../../lib";
 
 // Props passing down to the real component is actually an async operation
 describe("JsonSchemaFrom", () => {
   it("should render correct number field", async () => {
     let value = "";
-    const wrapper = mount(JsonSchemaForm, {
+    const wrapper = mount(SchemaFrom as any, {
       props: {
         schema: {
           type: "number",

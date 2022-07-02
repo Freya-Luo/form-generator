@@ -55,6 +55,7 @@ export default defineComponent({
 
     return () => {
       const classes = classesRef.value;
+
       return (
         <div class={classes.container}>
           <div class={classes.actions}>

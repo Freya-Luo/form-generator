@@ -2,7 +2,6 @@ import { defineComponent } from "vue";
 import { FieldProps, Schema } from "../types";
 import { useSFContext } from "../context";
 import ArrayItem from "./ArrayItem";
-import SelectionField from "./SelectionField";
 
 /**
  * 1) Single Type Array
@@ -80,6 +79,7 @@ export default defineComponent({
     return () => {
       const { schema, rootSchema, value } = props;
       const SchemaItem = context.SchemaItem;
+      const SelectionWidget = context.theme.widgets.SelectionWidget;
 
       const isMultiTypeArray = Array.isArray(schema.items);
       const isFixedOptionArray = schema.items && (schema.items as any).enum;
@@ -105,7 +105,7 @@ export default defineComponent({
           key: each,
           value: each,
         }));
-        return <SelectionField onChange={props.onChange} value={props.value} options={options} />;
+        return <SelectionWidget onChange={props.onChange} value={props.value} options={options} />;
       } else {
         // single type array
         const arr = Array.isArray(value) ? value : [];

@@ -1,9 +1,9 @@
 import { mount } from "@vue/test-utils";
-import JsonSchemaForm, { NumberField, StringField, SelectionField, ArrayField } from "../../lib";
+import SchemaFrom, { NumberField, StringField, SelectionField, ArrayField } from "../../lib";
 
 describe("ArrayField", () => {
   it("Render multiple type array", () => {
-    const wrapper = mount(JsonSchemaForm, {
+    const wrapper = mount(SchemaFrom as any, {
       props: {
         schema: {
           type: "array",
@@ -30,7 +30,7 @@ describe("ArrayField", () => {
   });
 
   it("Render single type array", () => {
-    const wrapper = mount(JsonSchemaForm, {
+    const wrapper = mount(SchemaFrom as any, {
       props: {
         schema: {
           type: "array",
@@ -52,7 +52,7 @@ describe("ArrayField", () => {
   });
 
   it("Render single type array with fixed selection options", () => {
-    const wrapper = mount(JsonSchemaForm, {
+    const wrapper = mount(SchemaFrom as any, {
       props: {
         schema: {
           type: "array",

@@ -1,8 +1,9 @@
-import { defineComponent } from "vue";
+import SelectionWidget from "./SelectionWidget";
 
-export default defineComponent({
-  name: "ThemeDefault",
-  setup() {
-    return () => <div>Helle Theme</div>;
+export default {
+  widgets: {
+    SelectionWidget,
+    TextWidget: SelectionWidget,
+    NumberWidget: SelectionWidget,
   },
-});
+};

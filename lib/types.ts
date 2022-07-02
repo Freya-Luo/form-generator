@@ -1,5 +1,6 @@
-import { PropType, defineComponent } from "vue";
+import { PropType, defineComponent, DefineComponent } from "vue";
 
+/* define Schema and SchemaTypes */
 export enum SchemaTypes {
   "NUMBER" = "number",
   "INTEGER" = "integer",
@@ -57,3 +58,37 @@ export const SchemaItemComponent = defineComponent({
 });
 
 export type SchemaFieldType = typeof SchemaItemComponent;
+
+/* define Theme */
+const BaseWidgetProps = {
+  value: {},
+  onChange: {
+    type: Function as PropType<(v: any) => void>,
+    required: true,
+  },
+} as const;
+
+const SelectionWidget = {
+  ...BaseWidgetProps,
+  options: {
+    type: Array as PropType<
+      {
+        key: string;
+        value: any;
+      }[]
+    >,
+    required: true,
+  },
+} as const;
+
+type BaseWidgetPropsType = DefineComponent<typeof BaseWidgetProps>;
+
+type SelectionWidgetType = DefineComponent<typeof SelectionWidget>;
+
+export interface Theme {
+  widgets: {
+    SelectionWidget: SelectionWidgetType;
+    TextWidget: BaseWidgetPropsType;
+    NumberWidget: BaseWidgetPropsType;
+  };
+}
