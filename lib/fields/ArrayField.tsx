@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import { FieldProps, Schema } from "../types";
+import { FieldProps, Schema, SelectionWidgetName } from "../types";
 import { useSFContext } from "../context";
 import ArrayItem from "./ArrayItem";
 import { getWidget } from "../themeProvider";
@@ -78,7 +78,7 @@ export default defineComponent({
     };
 
     // get the widget refs
-    const SelectionWidgetRef = getWidget("SelectionWidget");
+    const SelectionWidgetRef = getWidget(SelectionWidgetName.SelectionWidget);
 
     return () => {
       const { schema, rootSchema, value } = props;

@@ -1,5 +1,5 @@
 import { computed, defineComponent, inject, PropType, provide, ComputedRef } from "vue";
-import { Theme } from "./types";
+import { BaseWidgetName, SelectionWidgetName, Theme } from "./types";
 
 const ThemeContextKey = Symbol();
 
@@ -22,7 +22,7 @@ const ThemeProvider = defineComponent({
 });
 
 /**
- * Get the ref of the widget.
+ * Get the ref of the widget. T extends enum types.
  *
  * @note Using ref insead of the true statci value is because:
  * At the time the code is compiled, the values (props) of the widget are determined,
@@ -32,14 +32,14 @@ const ThemeProvider = defineComponent({
  * @param name name of the widget
  * @returns Ref of the widget
  */
-export function getWidget(name: string) {
+export function getWidget<T extends BaseWidgetName | SelectionWidgetName>(name: T) {
   const context: ComputedRef<Theme> | undefined = inject<ComputedRef<Theme>>(ThemeContextKey);
   if (!context) {
     throw new Error("SchemaItem should be provided.");
   }
   // get the ref
   const widgetRef = computed(() => {
-    return (context.value.widgets as any)[name];
+    return context.value.widgets[name];
   });
 
   return widgetRef;

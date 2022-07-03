@@ -1,24 +1,9 @@
-import { defineComponent, PropType, ref, watch, watchEffect } from "vue";
+import { defineComponent, PropType, ref, watch } from "vue";
+import { SelectionWidgetProps, SelectionWidgetType } from "../types";
 
-export default defineComponent({
+const Selection: SelectionWidgetType = defineComponent({
   name: "SelectionField",
-  props: {
-    value: {},
-    // use onChange to change props.value
-    onChange: {
-      type: Function as PropType<(v: any) => void>,
-      required: true,
-    },
-    options: {
-      type: Array as PropType<
-        {
-          key: string;
-          value: any;
-        }[]
-      >,
-      required: true,
-    },
-  },
+  props: SelectionWidgetProps,
   setup(props) {
     // may not use v-model to change "props" which is supposed to be one-way binding
     // so, instead using ref() and manually updating the values
@@ -52,4 +37,6 @@ export default defineComponent({
       );
     };
   },
-});
+}) as SelectionWidgetType;
+
+export default Selection;

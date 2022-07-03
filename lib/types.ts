@@ -1,6 +1,6 @@
 import { PropType, defineComponent, DefineComponent } from "vue";
 
-/* define Schema and SchemaTypes */
+/* Define Schema and SchemaTypes */
 export enum SchemaTypes {
   "NUMBER" = "number",
   "INTEGER" = "integer",
@@ -59,16 +59,28 @@ export const SchemaItemComponent = defineComponent({
 
 export type SchemaFieldType = typeof SchemaItemComponent;
 
-/* define Theme */
+/* Define Theme related types */
+// Base Widget Component
 const BaseWidgetProps = {
   value: {},
+  // use onChange to change props.value
   onChange: {
     type: Function as PropType<(v: any) => void>,
     required: true,
   },
 } as const;
 
-const SelectionWidget = {
+export type BaseWidgetPropsType = DefineComponent<typeof BaseWidgetProps, {}, {}>;
+
+export const BaseWidget: BaseWidgetPropsType = defineComponent({
+  props: BaseWidgetProps,
+  setup() {
+    return () => null;
+  },
+}) as BaseWidgetPropsType;
+
+// Selection Widget Component
+export const SelectionWidgetProps = {
   ...BaseWidgetProps,
   options: {
     type: Array as PropType<
@@ -81,14 +93,22 @@ const SelectionWidget = {
   },
 } as const;
 
-type BaseWidgetPropsType = DefineComponent<typeof BaseWidgetProps>;
+export type SelectionWidgetType = DefineComponent<typeof SelectionWidgetProps, {}, {}>;
 
-type SelectionWidgetType = DefineComponent<typeof SelectionWidget>;
+//
+export enum SelectionWidgetName {
+  SelectionWidget = "SelectionWidget",
+}
+
+export enum BaseWidgetName {
+  TextWidget = "TextWidget",
+  NumberWidget = "NumberWidget",
+}
 
 export interface Theme {
   widgets: {
-    SelectionWidget: SelectionWidgetType;
-    TextWidget: BaseWidgetPropsType;
-    NumberWidget: BaseWidgetPropsType;
+    [SelectionWidgetName.SelectionWidget]: SelectionWidgetType;
+    [BaseWidgetName.TextWidget]: BaseWidgetPropsType;
+    [BaseWidgetName.NumberWidget]: BaseWidgetPropsType;
   };
 }
