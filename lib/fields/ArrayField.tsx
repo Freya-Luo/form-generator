@@ -2,6 +2,7 @@ import { defineComponent } from "vue";
 import { FieldProps, Schema } from "../types";
 import { useSFContext } from "../context";
 import ArrayItem from "./ArrayItem";
+import { getWidget } from "../themeProvider";
 
 /**
  * 1) Single Type Array
@@ -76,10 +77,13 @@ export default defineComponent({
       props.onChange(arr);
     };
 
+    // get the widget refs
+    const SelectionWidgetRef = getWidget("SelectionWidget");
+
     return () => {
       const { schema, rootSchema, value } = props;
       const SchemaItem = context.SchemaItem;
-      const SelectionWidget = context.theme.widgets.SelectionWidget;
+      const SelectionWidget = SelectionWidgetRef.value;
 
       const isMultiTypeArray = Array.isArray(schema.items);
       const isFixedOptionArray = schema.items && (schema.items as any).enum;
