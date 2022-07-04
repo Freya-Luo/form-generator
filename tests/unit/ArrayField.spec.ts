@@ -1,9 +1,10 @@
 import { mount } from "@vue/test-utils";
-import SchemaFrom, { NumberField, StringField, SelectionField, ArrayField } from "../../lib";
+import SchemaForm, { NumberField, StringField, SelectionField, ArrayField } from "../../lib";
+import TestWrapper from "../utils/TestWrapper";
 
 describe("ArrayField", () => {
   it("Render multiple type array", () => {
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(TestWrapper, {
       props: {
         schema: {
           type: "array",
@@ -30,7 +31,7 @@ describe("ArrayField", () => {
   });
 
   it("Render single type array", () => {
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(TestWrapper, {
       props: {
         schema: {
           type: "array",
@@ -52,7 +53,7 @@ describe("ArrayField", () => {
   });
 
   it("Render single type array with fixed selection options", () => {
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(TestWrapper, {
       props: {
         schema: {
           type: "array",

@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import SchemaFrom, { NumberField, StringField } from "../../lib";
+import SchemaForm, { NumberField, StringField } from "../../lib";
 
 describe("ObjectField Unit Test", () => {
   let schema: any;
@@ -18,7 +18,7 @@ describe("ObjectField Unit Test", () => {
   });
 
   it("Render properties corresponding to the correct field types", async () => {
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(SchemaForm, {
       props: {
         schema,
         value: {},
@@ -35,7 +35,7 @@ describe("ObjectField Unit Test", () => {
 
   it("Change value when children components trigger onChange", async () => {
     let value: any = {};
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(SchemaForm, {
       props: {
         schema,
         value: value,
@@ -60,7 +60,7 @@ describe("ObjectField Unit Test", () => {
     let value: any = {
       name: "test",
     };
-    const wrapper = mount(SchemaFrom as any, {
+    const wrapper = mount(SchemaForm, {
       props: {
         schema,
         value: value,
