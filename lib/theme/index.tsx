@@ -1,10 +1,11 @@
 import SelectionWidget from "./SelectionWidget";
-import { BaseWidget } from "../types";
+import TextWidget from "./TextWidget";
+import NumberWidget from "./NumberWidget";
 
 export default {
   widgets: {
     SelectionWidget,
-    TextWidget: BaseWidget,
-    NumberWidget: BaseWidget,
+    TextWidget,
+    NumberWidget,
   },
 };

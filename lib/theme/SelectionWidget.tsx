@@ -1,8 +1,8 @@
-import { defineComponent, PropType, ref, watch } from "vue";
-import { SelectionWidgetProps, SelectionWidgetType } from "../types";
+import { defineComponent, ref, watch } from "vue";
+import { SelectionWidgetProps, SelectionWidgetPropsType } from "../types";
 
-const Selection: SelectionWidgetType = defineComponent({
-  name: "SelectionField",
+const Selection: SelectionWidgetPropsType = defineComponent({
+  name: "SelectionWidget",
   props: SelectionWidgetProps,
   setup(props) {
     // may not use v-model to change "props" which is supposed to be one-way binding
@@ -37,6 +37,6 @@ const Selection: SelectionWidgetType = defineComponent({
       );
     };
   },
-}) as SelectionWidgetType;
+}) as SelectionWidgetPropsType;
 
 export default Selection;

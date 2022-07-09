@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import SchemaForm, { NumberField, StringField, SelectionField, ArrayField } from "../../lib";
+import { NumberField, StringField, SelectionWidget, ArrayField } from "../../lib";
 import TestWrapper from "../utils/TestWrapper";
 
 describe("ArrayField", () => {
@@ -68,7 +68,7 @@ describe("ArrayField", () => {
     });
 
     const arrayField = wrapper.findComponent(ArrayField);
-    const selectField = arrayField.findComponent(SelectionField);
+    const selectField = arrayField.findComponent(SelectionWidget);
 
     expect(selectField.exists()).toBeTruthy();
   });

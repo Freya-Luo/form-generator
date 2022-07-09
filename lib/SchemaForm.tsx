@@ -1,5 +1,5 @@
 import { defineComponent, PropType, provide } from "vue";
-import { Schema, Theme } from "./types";
+import { Schema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 

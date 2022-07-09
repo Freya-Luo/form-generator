@@ -1,6 +1,4 @@
-import { mount, shallowMount } from "@vue/test-utils";
-import { defineComponent, h } from "vue";
-
+import { mount } from "@vue/test-utils";
 import SchemaFrom, { NumberField } from "../../lib";
 
 // Props passing down to the real component is actually an async operation
