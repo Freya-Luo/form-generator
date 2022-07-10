@@ -3,6 +3,7 @@ import { Schema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 import Ajv, { Options } from "ajv";
+import { validateFormData } from "./validator";
 
 // Ajv necessary configurations setup
 const defaultAjvOptions: Options = {
@@ -16,6 +17,8 @@ interface ContextRef {
     valid: boolean;
   };
 }
+
+type validateResultType = ReturnType<ContextRef["validate"]>;
 
 export default defineComponent({
   props: {
@@ -64,12 +67,9 @@ export default defineComponent({
         if (props.contextRef) {
           props.contextRef.value = {
             validate() {
-              const valid = validatorRef.value.validate(props.schema, props.value) as boolean;
+              const result = validateFormData(validatorRef.value, props.value, props.schema) as validateResultType;
 
-              return {
-                errors: validatorRef.value.errors || [],
-                valid,
-              };
+              return result;
             },
           };
         }
