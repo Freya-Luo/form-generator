@@ -35,7 +35,7 @@ export default defineComponent({
     };
 
     return () => {
-      const { schema, rootSchema, value } = props;
+      const { schema, rootSchema, value, errorSchema } = props;
       const SchemaItem = context.SchemaItem;
 
       const properties = schema.properties || {};
@@ -48,6 +48,7 @@ export default defineComponent({
           value={currentValue[key]}
           key={index}
           onChange={(val: any) => handleObjectFieldChange(key, val)}
+          errorSchema={errorSchema[key] || {}}
         />
       ));
     };

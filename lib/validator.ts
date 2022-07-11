@@ -10,6 +10,14 @@ interface ValidationError {
   schemaPath: string;
 }
 
+/**
+ * Use Ajv to validate the form fields
+ *
+ * @param validator Ajv valiator object
+ * @param formData Input values of the form data
+ * @param schema Schema that restricts the range of form values
+ * @returns Translated errorSchema object
+ */
 export function validateFormData(validator: Ajv.Ajv, formData: any, schema: Schema) {
   let schemaError: any = null;
   try {
@@ -57,9 +65,12 @@ export function validateFormData(validator: Ajv.Ajv, formData: any, schema: Sche
 export type ErrorSchema = {
   [level: string]: ErrorSchema;
 } & {
-  __errors: string[];
+  __errors?: string[];
 };
 
+/**
+ * Helper function to transfer errors array to the error schema object (like JSON format).
+ */
 function transformToErrorSchema(errors: ValidationError[]) {
   if (errors.length < 1) return {};
 

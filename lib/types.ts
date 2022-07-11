@@ -1,4 +1,5 @@
 import { PropType, defineComponent, DefineComponent } from "vue";
+import { ErrorSchema } from "./validator";
 
 /* Define Schema and SchemaTypes */
 export enum SchemaTypes {
@@ -51,6 +52,10 @@ export const FieldProps = {
     type: Function as PropType<(v: any) => void>,
     required: true,
   },
+  errorSchema: {
+    type: Object as PropType<ErrorSchema>,
+    required: true,
+  },
 } as const; // declare the props as read-only type
 
 export const SchemaItemComponent = defineComponent({
@@ -67,6 +72,9 @@ export const BaseWidgetProps = {
   onChange: {
     type: Function as PropType<(v: any) => void>,
     required: true,
+  },
+  errors: {
+    type: Array as PropType<string[]>,
   },
 } as const;
 

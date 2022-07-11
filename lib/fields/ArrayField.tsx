@@ -81,7 +81,7 @@ export default defineComponent({
     const SelectionWidgetRef = getWidget(SelectionWidgetName.SelectionWidget);
 
     return () => {
-      const { schema, rootSchema, value } = props;
+      const { schema, rootSchema, value, errorSchema } = props;
       const SchemaItem = context.SchemaItem;
       const SelectionWidget = SelectionWidgetRef.value;
 
@@ -100,6 +100,7 @@ export default defineComponent({
             rootSchema={rootSchema}
             value={array[index]}
             onChange={(val: any) => handleArrayItemChange(val, index)}
+            errorSchema={errorSchema[index] || {}}
           />
         ));
       } else if (isFixedOptionArray) {
@@ -109,7 +110,14 @@ export default defineComponent({
           key: each,
           value: each,
         }));
-        return <SelectionWidget onChange={props.onChange} value={props.value} options={options} />;
+        return (
+          <SelectionWidget
+            onChange={props.onChange}
+            value={props.value}
+            options={options}
+            errors={errorSchema.__errors}
+          />
+        );
       } else {
         // single type array
         const arr = Array.isArray(value) ? value : [];
@@ -129,6 +137,7 @@ export default defineComponent({
                 key={index}
                 rootSchema={rootSchema}
                 onChange={(v: any) => handleArrayItemChange(v, index)}
+                errorSchema={errorSchema[index] || {}}
               />
             </ArrayItem>
           );

@@ -3,7 +3,7 @@ import { Schema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 import Ajv, { Options } from "ajv";
-import { validateFormData } from "./validator";
+import { validateFormData, ErrorSchema } from "./validator";
 
 // Ajv necessary configurations setup
 const defaultAjvOptions: Options = {
@@ -18,7 +18,9 @@ interface ContextRef {
   };
 }
 
-type validateResultType = ReturnType<ContextRef["validate"]>;
+type validateResultType = ReturnType<ContextRef["validate"]> & {
+  errorSchema: ErrorSchema;
+};
 
 export default defineComponent({
   props: {
@@ -61,6 +63,8 @@ export default defineComponent({
       });
     });
 
+    const errorSchemaRef: Ref<ErrorSchema> = shallowRef({});
+
     watch(
       () => props.contextRef,
       () => {
@@ -68,7 +72,8 @@ export default defineComponent({
           props.contextRef.value = {
             validate() {
               const result = validateFormData(validatorRef.value, props.value, props.schema) as validateResultType;
-
+              // use shallowRef to allow the SchemaForm component to get this "result" value
+              errorSchemaRef.value = result.errorSchema;
               return result;
             },
           };
@@ -81,7 +86,15 @@ export default defineComponent({
 
     return () => {
       const { schema, value } = props;
-      return <SchemaItem schema={schema} rootSchema={schema} value={value} onChange={handleChange} />;
+      return (
+        <SchemaItem
+          schema={schema}
+          rootSchema={schema}
+          value={value}
+          onChange={handleChange}
+          errorSchema={errorSchemaRef.value || {}}
+        />
+      );
     };
   },
 });

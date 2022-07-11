@@ -9,10 +9,10 @@ export default defineComponent({
     const TextWidgetRef = getWidget(BaseWidgetName.TextWidget);
 
     return () => {
-      const { schema, rootSchema, ...otherProps } = props;
+      const { schema, rootSchema, errorSchema, ...otherProps } = props;
       const TextWidget = TextWidgetRef.value;
 
-      return <TextWidget {...otherProps} />;
+      return <TextWidget {...otherProps} errors={errorSchema.__errors} />;
     };
   },
 });
