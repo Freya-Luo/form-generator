@@ -67,6 +67,10 @@ export type SchemaFieldType = typeof SchemaItemComponent;
 /* Define Theme related types */
 // Base Widget Component
 export const BaseWidgetProps = {
+  schema: {
+    type: Object as PropType<Schema>,
+    required: true,
+  },
   value: {},
   // use onChange to change props.value
   onChange: {
@@ -78,14 +82,14 @@ export const BaseWidgetProps = {
   },
 } as const;
 
-export type BaseWidgetPropsType = DefineComponent<typeof BaseWidgetProps, {}, {}>;
+export type BaseWidgetType = DefineComponent<typeof BaseWidgetProps, {}, {}>;
 
-export const BaseWidget: BaseWidgetPropsType = defineComponent({
+export const BaseWidget: BaseWidgetType = defineComponent({
   props: BaseWidgetProps,
   setup() {
     return () => null;
   },
-}) as BaseWidgetPropsType;
+}) as BaseWidgetType;
 
 // Selection Widget Component
 export const SelectionWidgetProps = {
@@ -101,7 +105,7 @@ export const SelectionWidgetProps = {
   },
 } as const;
 
-export type SelectionWidgetPropsType = DefineComponent<typeof SelectionWidgetProps>;
+export type SelectionWidgetType = DefineComponent<typeof SelectionWidgetProps>;
 
 export enum SelectionWidgetName {
   SelectionWidget = "SelectionWidget",
@@ -114,8 +118,8 @@ export enum BaseWidgetName {
 
 export interface Theme {
   widgets: {
-    [SelectionWidgetName.SelectionWidget]: SelectionWidgetPropsType;
-    [BaseWidgetName.TextWidget]: BaseWidgetPropsType;
-    [BaseWidgetName.NumberWidget]: BaseWidgetPropsType;
+    [SelectionWidgetName.SelectionWidget]: SelectionWidgetType;
+    [BaseWidgetName.TextWidget]: BaseWidgetType;
+    [BaseWidgetName.NumberWidget]: BaseWidgetType;
   };
 }
