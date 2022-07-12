@@ -78,6 +78,7 @@ export default defineComponent({
       schemaCode: string;
       dataCode: string;
       uiSchemaCode: string;
+      customValidator: ((data: any, errors: any) => void) | undefined;
     } = reactive({
       schema: null,
       data: {},
@@ -85,17 +86,19 @@ export default defineComponent({
       schemaCode: "",
       dataCode: "",
       uiSchemaCode: "",
+      customValidator: undefined,
     });
 
     watchEffect(() => {
       const index = selectedRef.value;
-      const d = templates[index];
+      const d: any = templates[index];
       template.schema = d.schema;
       template.data = d.default;
       template.uiSchema = d.uiSchema;
       template.schemaCode = toJson(d.schema);
       template.dataCode = toJson(d.default);
       template.uiSchemaCode = toJson(d.uiSchema);
+      template.customValidator = d.customValidator;
     });
 
     const handleChange = (val: any) => {
@@ -116,6 +119,12 @@ export default defineComponent({
     const handleUISchemaChange = (val: string) => handleCodeChange("uiSchema", val);
 
     const contextRef = ref();
+
+    function validateForm() {
+      contextRef.value.validate().then((result: any) => {
+        console.log(result, "......");
+      });
+    }
 
     return () => {
       const classes = classesRef.value;
@@ -169,9 +178,10 @@ export default defineComponent({
                   value={template.data}
                   onChange={handleChange}
                   contextRef={contextRef}
+                  customValidator={template.customValidator}
                 />
               </ThemeProvider>
-              <button onClick={() => console.log(contextRef.value.validate())}>Validate Form</button>
+              <button onClick={validateForm}>Validate Form</button>
             </div>
           </div>
         </div>

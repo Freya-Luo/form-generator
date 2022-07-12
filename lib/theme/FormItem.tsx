@@ -45,12 +45,16 @@ const FormItem = defineComponent({
 export default FormItem;
 
 /**
- * HOC component. Wrap a vue component with another vue component.
+ * HOC component. Wrap a vue component FormItem with another vue component.
  *
  * Decouple the business logic of the wrapper component, which aims to add/enhance the functionalities
  * of the inner one, and the inner component.
- * @param Widget
- * @returns
+ *
+ * Using attrs to include all attributes that are not declared by props, which makes this HOC
+ * be compatible between the SelectionWidgetProps and the BaseWidgetProps.
+ *
+ * @param Widget The inner component that is wrapper by the FormItem
+ * @returns The cmobined wrapped component
  */
 export function wrapWithFormItem(Widget: any) {
   return defineComponent({

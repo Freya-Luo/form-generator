@@ -1,22 +1,38 @@
 export default {
-  name: "Singlet",
+  name: "Simple",
   schema: {
     description: "A simple form example.",
     type: "object",
     required: ["firstName", "lastName"],
     properties: {
       firstName: {
+        title: "firstName",
         type: "string",
         default: "Chuck",
       },
       lastName: {
+        title: "lastName",
         type: "string",
       },
       telephone: {
+        title: "telephone",
         type: "string",
         minLength: 10,
       },
-      arrays: {
+      staticArray: {
+        title: "staticArray",
+        type: "array",
+        items: [
+          {
+            type: "string",
+          },
+          {
+            type: "number",
+          },
+        ],
+      },
+      singleTypeArray: {
+        title: "singleTypeArray",
         type: "array",
         items: {
           type: "object",
@@ -30,11 +46,12 @@ export default {
           },
         },
       },
-      optionArrays: {
+      multiSelectArray: {
+        title: "multiSelectArray",
         type: "array",
         items: {
           type: "string",
-          enum: ["hhh", "kkk", "ooo"],
+          enum: ["123", "456", "789"],
         },
       },
     },
@@ -59,6 +76,6 @@ export default {
     age: 75,
     bio: "Roundhouse kicking asses since 1940",
     password: "noneed",
-    arrays: [{ name: "freya", age: 24 }],
+    singleTypeArray: [{ name: "jokcy", age: 12 }],
   },
 };

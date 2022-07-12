@@ -12,15 +12,11 @@ const defaultAjvOptions: Options = {
 };
 
 interface ContextRef {
-  validate: () => {
+  validate: () => Promise<{
     errors: any[];
     valid: boolean;
-  };
+  }>;
 }
-
-type validateResultType = ReturnType<ContextRef["validate"]> & {
-  errorSchema: ErrorSchema;
-};
 
 export default defineComponent({
   props: {
@@ -39,7 +35,12 @@ export default defineComponent({
       type: Object as PropType<Ref<ContextRef | undefined>>,
     },
     ajvOptions: {
+      // ajv validator
       type: Object as PropType<Options>,
+    },
+    customValidator: {
+      // custome validator
+      type: Function as PropType<(data: any, errors: any) => void>,
     },
   },
   name: "SchemaForm",
@@ -70,8 +71,13 @@ export default defineComponent({
       () => {
         if (props.contextRef) {
           props.contextRef.value = {
-            validate() {
-              const result = validateFormData(validatorRef.value, props.value, props.schema) as validateResultType;
+            async validate() {
+              const result = await validateFormData(
+                validatorRef.value,
+                props.value,
+                props.schema,
+                props.customValidator
+              );
               // use shallowRef to allow the SchemaForm component to get this "result" value
               errorSchemaRef.value = result.errorSchema;
               return result;
