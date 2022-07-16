@@ -1,5 +1,6 @@
-import { computed, defineComponent, inject, PropType, provide, ComputedRef } from "vue";
-import { BaseWidgetName, SelectionWidgetName, Theme } from "./types";
+import { computed, defineComponent, inject, PropType, provide, ComputedRef, ref } from "vue";
+import { BaseWidgetName, SelectionWidgetName, Theme, UISchema, BaseWidgetType } from "./types";
+import { isObject } from "./utils";
 
 const ThemeContextKey = Symbol();
 
@@ -32,7 +33,12 @@ const ThemeProvider = defineComponent({
  * @param name name of the widget
  * @returns Ref of the widget
  */
-export function getWidget<T extends BaseWidgetName | SelectionWidgetName>(name: T) {
+export function getWidget<T extends BaseWidgetName | SelectionWidgetName>(name: T, uiSchema?: UISchema) {
+  // If custom schema is present, use it instead of the default one
+  if (uiSchema?.widget && isObject(uiSchema.widget)) {
+    return ref(uiSchema.widget as BaseWidgetType);
+  }
+
   const context: ComputedRef<Theme> | undefined = inject<ComputedRef<Theme>>(ThemeContextKey);
   if (!context) {
     throw new Error("SchemaItem should be provided.");

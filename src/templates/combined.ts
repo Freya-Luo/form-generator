@@ -1,35 +1,23 @@
 export default {
-  name: "Simple",
+  name: "Combined",
   schema: {
-    description: "A simple form example.",
+    description: "A collection of form examples.",
     type: "object",
-    required: ["firstName", "lastName"],
+    required: ["First Name", "Last Name"],
     properties: {
       firstName: {
-        title: "firstName",
+        title: "First Name",
         type: "string",
-        default: "Chuck",
+        default: "Freya",
       },
       lastName: {
-        title: "lastName",
+        title: "Last Name",
         type: "string",
       },
-      telephone: {
-        title: "telephone",
+      motto: {
+        title: "Bio",
         type: "string",
         minLength: 10,
-      },
-      staticArray: {
-        title: "staticArray",
-        type: "array",
-        items: [
-          {
-            type: "string",
-          },
-          {
-            type: "number",
-          },
-        ],
       },
       singleTypeArray: {
         title: "singleTypeArray",
@@ -71,11 +59,13 @@ export default {
     },
   },
   default: {
-    firstName: "Chuck",
-    lastName: "Norris",
-    age: 75,
-    bio: "Roundhouse kicking asses since 1940",
-    password: "noneed",
-    singleTypeArray: [{ name: "jokcy", age: 12 }],
+    firstName: "Freya",
+    lastName: "Luo",
+    age: 24,
+    motto: "Work hard and enjoy life",
+    singleTypeArray: [
+      { name: "freya", age: 24 },
+      { name: "eight", age: 17 },
+    ],
   },
 };

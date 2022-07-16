@@ -46,7 +46,7 @@ export default defineComponent({
     },
   },
   name: "SchemaForm",
-  setup(props, { slots, emit, attrs }) {
+  setup(props, { slots }) {
     // good practice to add future extensions
     const handleChange = (v: any) => {
       props.onChange(v);
