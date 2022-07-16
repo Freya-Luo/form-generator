@@ -81,7 +81,7 @@ export default defineComponent({
     const SelectionWidgetRef = getWidget(SelectionWidgetName.SelectionWidget);
 
     return () => {
-      const { schema, rootSchema, value, errorSchema } = props;
+      const { schema, uiSchema, rootSchema, value, errorSchema } = props;
       const SchemaItem = context.SchemaItem;
       const SelectionWidget = SelectionWidgetRef.value;
 
@@ -93,16 +93,21 @@ export default defineComponent({
         const items: Schema[] = schema.items as any;
         const array = Array.isArray(value) ? value : [];
 
-        return items.map((schema: Schema, index: number) => (
-          <SchemaItem
-            schema={schema}
-            key={index}
-            rootSchema={rootSchema}
-            value={array[index]}
-            onChange={(val: any) => handleArrayItemChange(val, index)}
-            errorSchema={errorSchema[index] || {}}
-          />
-        ));
+        return items.map((schema: Schema, index: number) => {
+          const uiSchemaItems = uiSchema.items;
+          const uiItems = Array.isArray(uiSchemaItems) ? uiSchemaItems[index] || {} : uiSchemaItems || {};
+          return (
+            <SchemaItem
+              schema={schema}
+              uiSchema={uiItems}
+              key={index}
+              rootSchema={rootSchema}
+              value={array[index]}
+              onChange={(val: any) => handleArrayItemChange(val, index)}
+              errorSchema={errorSchema[index] || {}}
+            />
+          );
+        });
       } else if (isFixedOptionArray) {
         // fixed options array
         const enums = (schema as any).items.enum;
@@ -134,6 +139,7 @@ export default defineComponent({
             >
               <SchemaItem
                 schema={schema.items as Schema}
+                uiSchema={(uiSchema.items as any) || {}}
                 value={v}
                 key={index}
                 rootSchema={rootSchema}

@@ -41,6 +41,10 @@ export const FieldProps = {
     type: Object as PropType<Schema>,
     required: true,
   },
+  uiSchema: {
+    type: Object as PropType<UISchema>,
+    required: true,
+  },
   rootSchema: {
     type: Object as PropType<Schema>,
     required: true,
@@ -122,4 +126,13 @@ export interface Theme {
     [BaseWidgetName.TextWidget]: BaseWidgetType;
     [BaseWidgetName.NumberWidget]: BaseWidgetType;
   };
+}
+
+/* UI Schema */
+export interface UISchema {
+  widget?: string | BaseWidgetType;
+  properties?: {
+    [key: string]: UISchema;
+  };
+  items?: UISchema | UISchema[];
 }

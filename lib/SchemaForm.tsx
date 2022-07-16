@@ -1,5 +1,5 @@
 import { defineComponent, PropType, provide, Ref, shallowRef, ref, watch, watchEffect } from "vue";
-import { Schema } from "./types";
+import { Schema, UISchema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 import Ajv, { Options } from "ajv";
@@ -22,6 +22,9 @@ export default defineComponent({
     schema: {
       type: Object as PropType<Schema>,
       required: true,
+    },
+    uiSchema: {
+      type: Object as PropType<UISchema>,
     },
     value: {
       required: true,
@@ -115,10 +118,11 @@ export default defineComponent({
     );
 
     return () => {
-      const { schema, value } = props;
+      const { schema, value, uiSchema } = props;
       return (
         <SchemaItem
           schema={schema}
+          uiSchema={uiSchema || {}}
           rootSchema={schema}
           value={value}
           onChange={handleChange}
