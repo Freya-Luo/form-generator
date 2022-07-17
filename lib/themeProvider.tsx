@@ -1,6 +1,7 @@
-import { computed, defineComponent, inject, PropType, provide, ComputedRef, ref } from "vue";
-import { BaseWidgetName, SelectionWidgetName, Theme, UISchema, BaseWidgetType } from "./types";
+import { computed, defineComponent, inject, PropType, provide, ComputedRef, ref, ExtractPropTypes } from "vue";
+import { BaseWidgetName, SelectionWidgetName, Theme, BaseWidgetType, FieldProps } from "./types";
 import { isObject } from "./utils";
+import { useSFContext } from "./context";
 
 const ThemeContextKey = Symbol();
 
@@ -33,10 +34,25 @@ const ThemeProvider = defineComponent({
  * @param name name of the widget
  * @returns Ref of the widget
  */
-export function getWidget<T extends BaseWidgetName | SelectionWidgetName>(name: T, uiSchema?: UISchema) {
-  // If custom schema is present, use it instead of the default one
-  if (uiSchema?.widget && isObject(uiSchema.widget)) {
-    return ref(uiSchema.widget as BaseWidgetType);
+export function getWidget<T extends BaseWidgetName | SelectionWidgetName>(
+  name: T,
+  props?: ExtractPropTypes<typeof FieldProps>
+) {
+  const formContext = useSFContext();
+
+  if (props) {
+    const { schema, uiSchema } = props;
+    // If custom schema is present, use it instead of the default one
+    if (uiSchema?.widget && isObject(uiSchema.widget)) {
+      return ref(uiSchema.widget as BaseWidgetType);
+    }
+
+    if (schema.format) {
+      if (formContext.mappedAjvFormatRef.value[schema.format]) {
+        // get the format from the format mapper, and return the ref of it
+        return ref(formContext.mappedAjvFormatRef.value[schema.format]);
+      }
+    }
   }
 
   const context: ComputedRef<Theme> | undefined = inject<ComputedRef<Theme>>(ThemeContextKey);

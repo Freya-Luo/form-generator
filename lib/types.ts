@@ -1,5 +1,6 @@
 import { PropType, defineComponent, DefineComponent } from "vue";
 import { ErrorSchema } from "./validator";
+import { FormatDefinition, KeywordDefinition, CompilationContext } from "ajv";
 
 /* Define Schema and SchemaTypes */
 export enum SchemaTypes {
@@ -142,3 +143,9 @@ export type UISchema = {
   // enable any properties defined in this schema (e.g., color)
   [key: string]: any;
 };
+
+export interface CustomAjvFormat {
+  name: string;
+  definition: FormatDefinition;
+  component: BaseWidgetType;
+}

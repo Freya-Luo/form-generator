@@ -1,5 +1,5 @@
-import { defineComponent, PropType, provide, Ref, shallowRef, ref, watch, watchEffect } from "vue";
-import { Schema, UISchema } from "./types";
+import { defineComponent, PropType, provide, Ref, shallowRef, ref, watch, watchEffect, computed } from "vue";
+import { BaseWidgetType, CustomAjvFormat, Schema, UISchema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 import Ajv, { Options } from "ajv";
@@ -44,6 +44,9 @@ export default defineComponent({
       // custome validator
       type: Function as PropType<(data: any, errors: any) => void>,
     },
+    customAjvFormats: {
+      type: [Array, Object] as PropType<CustomAjvFormat[] | CustomAjvFormat>,
+    },
   },
   name: "SchemaForm",
   setup(props, { slots }) {
@@ -51,10 +54,6 @@ export default defineComponent({
     const handleChange = (v: any) => {
       props.onChange(v);
     };
-
-    // if needs responsive render, context needs to be wrapped with reactive({SchemaItem})
-    const context = { SchemaItem };
-    provide(SchemaFormContextKey, context);
 
     // ajvOptions is a reactive prop, so using shalloWRef and watchEffect
     // any changes in props.ajvOptions, it will create a new Ajv instance
@@ -64,7 +63,17 @@ export default defineComponent({
         ...defaultAjvOptions,
         ...props.ajvOptions,
       });
+
+      /* Extension 3: Apply Ajv custom formats plugin */
+      if (props.customAjvFormats) {
+        const customFormats = Array.isArray(props.customAjvFormats) ? props.customAjvFormats : [props.customAjvFormats];
+
+        customFormats.forEach((format) => {
+          validatorRef.value.addFormat(format.name, format.definition);
+        });
+      }
     });
+
     // transform to error schema
     const errorSchemaRef: Ref<ErrorSchema> = shallowRef({});
 
@@ -116,6 +125,22 @@ export default defineComponent({
         immediate: true,
       }
     );
+
+    /* -----------  Extension 3: Apply Ajv custom formats plugin ------------- */
+    const mappedAjvFormatRef = computed(() => {
+      if (props.customAjvFormats) {
+        const customFormats = Array.isArray(props.customAjvFormats) ? props.customAjvFormats : [props.customAjvFormats];
+        return customFormats.reduce((result, format) => {
+          result[format.name] = format.component;
+          return result;
+        }, {} as { [key: string]: BaseWidgetType });
+      }
+      return {};
+    });
+
+    // if needs responsive render, context needs to be wrapped with reactive({SchemaItem})
+    const context = { SchemaItem, mappedAjvFormatRef };
+    provide(SchemaFormContextKey, context);
 
     return () => {
       const { schema, value, uiSchema } = props;

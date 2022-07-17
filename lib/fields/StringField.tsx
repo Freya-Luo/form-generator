@@ -8,13 +8,13 @@ export default defineComponent({
   setup(props) {
     // const TextWidgetRef = getWidget(BaseWidgetName.TextWidget);
 
-    /** Extension example 1: Apply customized password widget */
+    /* Extension example 1: Apply customized password widget */
     const TextWidgetRef = computed(() => {
-      const widgetRef = getWidget(BaseWidgetName.TextWidget, props.uiSchema);
+      const widgetRef = getWidget(BaseWidgetName.TextWidget, props);
       return widgetRef.value;
     });
 
-    /** Extension example 2: Apply custom color prop */
+    /* Extension example 2: Apply custom color prop */
     const widgetCustomOptionsRef = computed(() => {
       const { widget, properties, items, ...restOptions } = props.uiSchema;
       return restOptions;
