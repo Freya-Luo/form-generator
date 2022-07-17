@@ -1,4 +1,4 @@
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { BaseWidgetProps, BaseWidgetType } from "../types";
 
 import { wrapWithFormItem } from "./FormItem";
@@ -13,8 +13,16 @@ const TextWidget: BaseWidgetType = wrapWithFormItem(
         e.target.value = props.value;
         props.onChange(value);
       };
+
+      /** Extension example 2: Apply custom color prop */
+      const styleRef = computed(() => {
+        return {
+          color: (props.customOptions && props.customOptions.color) || "black",
+        };
+      });
+
       return () => {
-        return <input type="text" value={props.value as any} onInput={handleChange} />;
+        return <input type="text" value={props.value as any} onInput={handleChange} style={styleRef.value} />;
       };
     },
   }) as BaseWidgetType

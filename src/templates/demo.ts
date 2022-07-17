@@ -33,7 +33,7 @@ export default {
         widget: PasswordWidget,
       },
       password2: {
-        color: "red",
+        color: "green",
       },
     },
   },

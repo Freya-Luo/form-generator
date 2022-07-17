@@ -84,6 +84,9 @@ export const BaseWidgetProps = {
   errors: {
     type: Array as PropType<string[]>,
   },
+  customOptions: {
+    type: Object as PropType<{ [key: string]: any }>,
+  },
 } as const;
 
 export type BaseWidgetType = DefineComponent<typeof BaseWidgetProps, {}, {}>;
@@ -129,10 +132,13 @@ export interface Theme {
 }
 
 /* UI Schema */
-export interface UISchema {
+export type UISchema = {
   widget?: string | BaseWidgetType;
   properties?: {
     [key: string]: UISchema;
   };
   items?: UISchema | UISchema[];
-}
+} & {
+  // enable any properties defined in this schema (e.g., color)
+  [key: string]: any;
+};

@@ -14,11 +14,17 @@ export default defineComponent({
       return widgetRef.value;
     });
 
+    /** Extension example 2: Apply custom color prop */
+    const widgetCustomOptionsRef = computed(() => {
+      const { widget, properties, items, ...restOptions } = props.uiSchema;
+      return restOptions;
+    });
+
     return () => {
       const { rootSchema, errorSchema, ...otherProps } = props;
       const TextWidget = TextWidgetRef.value;
 
-      return <TextWidget {...otherProps} errors={errorSchema.__errors} />;
+      return <TextWidget {...otherProps} errors={errorSchema.__errors} customOptions={widgetCustomOptionsRef.value} />;
     };
   },
 });
