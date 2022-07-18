@@ -5,6 +5,8 @@ import templates from "./templates";
 import SchemaForm, { ThemeProvider } from "../lib";
 import theme from "../lib/theme";
 
+import format from "./plugins/customFormatPlugin";
+
 type Schema = any;
 type UISchema = any;
 
@@ -180,6 +182,7 @@ export default defineComponent({
                   onChange={handleChange}
                   contextRef={contextRef}
                   customValidator={template.customValidator}
+                  customAjvFormats={format}
                 />
               </ThemeProvider>
               <button onClick={validateForm}>Validate Form</button>

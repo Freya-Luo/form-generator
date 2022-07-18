@@ -15,6 +15,11 @@ export default {
         minLength: 6,
         title: "Comfirm Password",
       },
+      color: {
+        type: "string",
+        format: "color",
+        title: "Color",
+      },
     },
   },
   async customValidator(data: any, errors: any) {
