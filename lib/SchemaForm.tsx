@@ -1,5 +1,5 @@
 import { defineComponent, PropType, provide, Ref, shallowRef, ref, watch, watchEffect, computed } from "vue";
-import { BaseWidgetType, CustomAjvFormat, Schema, UISchema } from "./types";
+import { BaseWidgetType, CustomAjvFormat, CustomAjvKeyword, Schema, UISchema } from "./types";
 import SchemaItem from "./SchemaItem";
 import { SchemaFormContextKey } from "./context";
 import Ajv, { Options } from "ajv";
@@ -47,6 +47,9 @@ export default defineComponent({
     customAjvFormats: {
       type: [Array, Object] as PropType<CustomAjvFormat[] | CustomAjvFormat>,
     },
+    customAjvKeywords: {
+      type: [Array, Object] as PropType<CustomAjvKeyword[] | CustomAjvKeyword>,
+    },
   },
   name: "SchemaForm",
   setup(props, { slots }) {
@@ -64,12 +67,23 @@ export default defineComponent({
         ...props.ajvOptions,
       });
 
-      /* Extension 3: Apply Ajv custom formats plugin */
+      /* Extension 3: Apply Ajv custom formats prop */
       if (props.customAjvFormats) {
         const customFormats = Array.isArray(props.customAjvFormats) ? props.customAjvFormats : [props.customAjvFormats];
 
         customFormats.forEach((format) => {
           validatorRef.value.addFormat(format.name, format.definition);
+        });
+      }
+
+      /* Extension 4: Apply Ajv custom keyword prop */
+      if (props.customAjvKeywords) {
+        const customFormats = Array.isArray(props.customAjvKeywords)
+          ? props.customAjvKeywords
+          : [props.customAjvKeywords];
+
+        customFormats.forEach((keyword) => {
+          validatorRef.value.addKeyword(keyword.name, keyword.definition);
         });
       }
     });
@@ -126,10 +140,11 @@ export default defineComponent({
       }
     );
 
-    /* -----------  Extension 3: Apply Ajv custom formats plugin ------------- */
+    /* -----------  Extension 3: Apply Ajv custom formats prop ------------- */
     const mappedAjvFormatRef = computed(() => {
       if (props.customAjvFormats) {
         const customFormats = Array.isArray(props.customAjvFormats) ? props.customAjvFormats : [props.customAjvFormats];
+
         return customFormats.reduce((result, format) => {
           result[format.name] = format.component;
           return result;
@@ -138,8 +153,28 @@ export default defineComponent({
       return {};
     });
 
+    /* -----------  Extension 4: Apply Ajv custom keyword prop ------------- */
+    const transformSchemaRef = computed(() => {
+      if (props.customAjvKeywords) {
+        const customKeywords = Array.isArray(props.customAjvKeywords)
+          ? props.customAjvKeywords
+          : [props.customAjvKeywords];
+
+        return (schema: Schema) => {
+          let newSchema = schema;
+          customKeywords.forEach((keyword) => {
+            if ((newSchema as any)[keyword.name]) {
+              newSchema = keyword.transformSchema(schema);
+            }
+          });
+          return newSchema;
+        };
+      }
+      return (s: Schema) => s;
+    });
+
     // if needs responsive render, context needs to be wrapped with reactive({SchemaItem})
-    const context = { SchemaItem, mappedAjvFormatRef };
+    const context = { SchemaItem, mappedAjvFormatRef, transformSchemaRef };
     provide(SchemaFormContextKey, context);
 
     return () => {

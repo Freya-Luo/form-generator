@@ -149,3 +149,26 @@ export interface CustomAjvFormat {
   definition: FormatDefinition;
   component: BaseWidgetType;
 }
+
+// Source code from Ajv package
+interface CustomAjvKeywordDefinition {
+  type?: string | Array<string>;
+  async?: boolean;
+  $data?: boolean;
+  errors?: boolean | string;
+  metaSchema?: object;
+  // schema: false makes validate not to expect schema (ValidateFunction)
+  schema?: boolean;
+  statements?: boolean;
+  dependencies?: Array<string>;
+  modifying?: boolean;
+  valid?: boolean;
+  // one and only one of the following properties should be present
+  macro: (schema: any, parentSchema: object, it: CompilationContext) => object | boolean;
+}
+
+export interface CustomAjvKeyword {
+  name: string;
+  definition: CustomAjvKeywordDefinition;
+  transformSchema: (originSchema: Schema) => Schema;
+}
