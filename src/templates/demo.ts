@@ -20,6 +20,11 @@ export default {
         format: "color",
         title: "Color",
       },
+      text: {
+        type: "string",
+        test: true,
+        title: "Keyword Text",
+      },
     },
   },
   async customValidator(data: any, errors: any) {

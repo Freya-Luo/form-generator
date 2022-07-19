@@ -6,6 +6,7 @@ import SchemaForm, { ThemeProvider } from "../lib";
 import theme from "../lib/theme";
 
 import format from "./plugins/customFormatPlugin";
+import keyword from "./plugins/customKeywordPlugin";
 
 type Schema = any;
 type UISchema = any;
@@ -183,6 +184,7 @@ export default defineComponent({
                   contextRef={contextRef}
                   customValidator={template.customValidator}
                   customAjvFormats={format}
+                  customAjvKeywords={keyword}
                 />
               </ThemeProvider>
               <button onClick={validateForm}>Validate Form</button>
