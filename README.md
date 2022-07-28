@@ -1,4 +1,4 @@
-# form-generator
+# Form Generator
 
 ### Project Overview
 
